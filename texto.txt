@@ -1,0 +1,16 @@
+admin 
+
+api rest 
+
+base de datos mongo 
+
+ingresar usuario 
+
+chat websocket 
+
+El menú de registro consta del nombre completo del cliente,
+número telefónico, email y
+campo de password duplicado para verificar coincidencia.
+
+
+db.productos.insertOne({'nombre' : 'Iphone 13', 'precio' : 300000 , 'foto' : 'https://http2.mlstatic.com/D_NQ_NP_736168-MLA47781742030_102021-O.webp', 'stock' : 50, 'timestamp' : '25/01/2022', 'codigo' : 'IPHON3'})

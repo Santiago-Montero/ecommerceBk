@@ -1,0 +1,15 @@
+.cards_productos{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+.card{
+    display: flex;
+    justify-content: center;
+    flex-flow: column wrap;
+    align-items: center;
+}
+.card img{
+    width: 150px;
+    height: 200px;
+}
