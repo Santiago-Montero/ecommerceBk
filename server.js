@@ -89,6 +89,21 @@ app.get('/' , async (req,res) => {
     res.render('logIn') ;
 })
 let admin = false ; 
+
+const auth = (req,res,next) =>{
+    if(req.session?.user !== ''){
+        return next()
+    }else{
+        mensaje = 'Error de autorizacion' ;
+        errorType = '401' ; 
+        res.render('error', {
+            errorType,
+            mensaje,
+            error : mensaje ? true : false
+        })
+    }   
+}
+
 app.get('/logout',(req, res) => {
     req.session.destroy(error => {
         if(error){
@@ -103,8 +118,9 @@ app.get('/logout',(req, res) => {
         else res.render('logIn') ;
     })
 })
-routerProductos.get('/', async (req, res) => {
-    const user_name = req.query
+
+routerProductos.post('/user', auth, async(req, res) => {
+    const user_name = req.body.nombre
     if(user_name == 'santi') admin = true
     else admin = false
     // req.session.user =  req.session.user ? user_name  : user_name 
@@ -112,7 +128,7 @@ routerProductos.get('/', async (req, res) => {
     // carga de productos
     const productos = await productosDao.getAll()
     console.log(productos)
-    if(user_name.nombre){
+    if(user_name){
         res.render('home', {
             productos,
             productsExist : productos ? true : false,
@@ -127,6 +143,17 @@ routerProductos.get('/', async (req, res) => {
         error : mensaje ? true : false
         })
     }
+});
+
+routerProductos.get('/', auth, async (req, res) => {
+    // carga de productos
+    const productos = await productosDao.getAll()
+    console.log(productos)
+        res.render('home', {
+            productos,
+            productsExist : productos ? true : false,
+            user_name
+        }) 
 });
 routerProductos.get('/admin', async (req, res) => {
     const productos = await productosDao.getAll()
