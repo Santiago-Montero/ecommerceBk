@@ -51,6 +51,7 @@ app.use(session({
     }
 }))
 
+/*
 routerProductos.use(session({
     store : new MongoStore({
         mongoUrl : uri,
@@ -62,7 +63,7 @@ routerProductos.use(session({
     cookie : {
         maxAge : 40000
     }
-}))/*
+}))
 app.get('/mongo' , (req, res) => {
     if(req.session.views){
         req.session.views ++
