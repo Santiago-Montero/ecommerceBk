@@ -1,14 +1,21 @@
 const { productosDao } = require('./contenedores/daos/index.js')
 const express = require('express') ;
-const session = require('express-session')
-const MongoStore = require('connect-mongo')
-const moment = require('moment')
-const handlebars = require('express-handlebars')
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+const moment = require('moment');
+const handlebars = require('express-handlebars');
 const app  = express() ; 
-const { Router } = express
+const { Router } = express;
+const parseArgs = require('minimist')
+const configEnv = require('./config.js')
 
-app.listen(3000)
+console.log('NODE_ENV : ' + configEnv.NODE_ENV)
+
 const routerProductos = Router();
+
+const args = parseArgs(process.argv.slice(2));
+app.listen(args.port || 3000)
+
 
 routerProductos.use(express.static('./views/css'));
 routerProductos.use(express.static('./views/js'));
@@ -52,27 +59,51 @@ app.use(session({
 }))
 
 /*
-routerProductos.use(session({
-    store : new MongoStore({
-        mongoUrl : uri,
-        mongoOptions : advancedOptions
-    }),
-    secret : 'thesession',
-    resave : true,
-    saveUninitialized : true,
-    cookie : {
-        maxAge : 40000
+    routerProductos.use(session({
+        store : new MongoStore({
+            mongoUrl : uri,
+            mongoOptions : advancedOptions
+        }),
+        secret : 'thesession',
+        resave : true,
+        saveUninitialized : true,
+        cookie : {
+            maxAge : 40000
+        }
+    }))
+    app.get('/mongo' , (req, res) => {
+        if(req.session.views){
+            req.session.views ++
+            res.send('<h2> Views: ' + req.session.views + '</h2>')
+        }else{
+            req.session.views = 1;
+            res.end('Bienvenido')
+        }
+    })
+*/
+
+
+const info = [
+    {
+    ruta: process.cwd(),
+    id : process.pid,
+    version : process.version,
+    titulo : process.title,
+    plataforma : process.platform ,
     }
-}))
-app.get('/mongo' , (req, res) => {
-    if(req.session.views){
-        req.session.views ++
-        res.send('<h2> Views: ' + req.session.views + '</h2>')
-    }else{
-        req.session.views = 1;
-        res.end('Bienvenido')
-    }
-})*/
+]
+const memoria = [
+    {memoria : process.memoryUsage()}
+]
+
+const argsDeEntrada = [args]
+
+// console.log(process.cwd()) // ruta
+// console.log(process.pid) // ip
+// console.log(process.version) // de node
+// console.log(process.title)
+// console.log(process.platform)
+// console.log(process.memoryUsage())
 
 
 app.engine(
@@ -88,6 +119,15 @@ app.get('/' , async (req,res) => {
     // INICIO DE SESION   
     if(req.session.user) req.session.user = ''
     res.render('logIn') ;
+})
+app.get('/info', (req,res) => {
+    res.render('info', {
+        info_exist : info ? true : false,
+        info,
+        memoria,
+        argsDeEntrada_exist :  argsDeEntrada[0]._.length > 0 ? true : false,
+        argsDeEntrada 
+    })
 })
 let admin = false ; 
 

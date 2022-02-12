@@ -1,0 +1,54 @@
+{{#if info_exist}}
+    <table class="table table-dark table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Ruta</th>
+                <th scope="col">Process Id</th>
+                <th scope="col">Version Node</th>
+                <th scope="col">Plataforma</th>
+                <th scope="col">Titulo</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each info}}
+            <tr>
+                <td>{{this.ruta}}</td>
+                <td>{{this.id}}</td>
+                <td>{{this.version}}</td>
+                <td>{{this.plataforma}}</td>
+                <td>{{this.titulo}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <table class="table table-dark table-striped">
+        <h1>Memoria</h1>
+        <thead>
+            <tr>
+                <th scope="col">Rss</th>
+                <th scope="col">HeapTotal </th>
+                <th scope="col">HeapUsed </th>
+                <th scope="col">External</th>
+                <th scope="col">Array Buffers</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#each memoria}}
+            <tr>
+                <td>{{memoria.rss}}</td>
+                <td>{{memoria.heapTotal}}</td>
+                <td>{{memoria.heapUsed}}</td>
+                <td>{{memoria.external}}</td>
+                <td>{{memoria.arrayBuffers}}</td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    {{#if argsDeEntrada_exist}}
+        <h1>Argumentos</h1>
+        {{#each argsDeEntrada}}
+            <p> Argumento : {{this.port}}</p>
+            <p> Argumento : {{this._}}</p>
+        {{/each}}
+    {{/if}}
+{{/if}}
