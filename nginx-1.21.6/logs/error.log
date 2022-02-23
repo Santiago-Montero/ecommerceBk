@@ -1,0 +1,23 @@
+2022/02/20 10:10:00 [notice] 10372#4284: signal process started
+2022/02/20 10:10:11 [notice] 3520#8900: signal process started
+2022/02/20 10:10:11 [error] 3520#8900: CreateFile() "C:\Users\heiir\Desktop\nginx-1.21.6/logs/nginx.pid" failed (2: El sistema no puede encontrar el archivo especificado)
+2022/02/20 10:11:24 [error] 5824#5880: *2 CreateFile() "C:\Users\heiir\Desktop\nginx-1.21.6/html/favicon.ico" failed (2: El sistema no puede encontrar el archivo especificado), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1", referrer: "http://127.0.0.1/"
+2022/02/20 10:43:20 [notice] 8072#7464: signal process started
+2022/02/20 10:47:31 [emerg] 3880#3824: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:48:15 [emerg] 12992#11976: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:48:18 [emerg] 13964#14332: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:48:24 [emerg] 8368#11416: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:48:55 [emerg] 13980#14292: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:49:21 [emerg] 8408#13412: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:49:35 [emerg] 11704#12712: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:50:05 [emerg] 14192#1340: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:51:02 [emerg] 10204#13316: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/20 10:51:16 [emerg] 6548#13008: unexpected "}" in C:\Users\heiir\Desktop\nginx-1.21.6/conf/nginx.conf:29
+2022/02/23 18:54:52 [emerg] 7440#13336: unexpected "}" in C:\Users\heiir\Desktop\ecommerceBk\nginx-1.21.6/conf/nginx.conf:29
+2022/02/23 18:55:59 [emerg] 6080#13068: unexpected "}" in C:\Users\heiir\Desktop\ecommerceBk\nginx-1.21.6/conf/nginx.conf:30
+2022/02/23 18:57:17 [notice] 12980#13156: signal process started
+2022/02/23 18:57:17 [error] 12980#13156: CreateFile() "C:\Users\heiir\Desktop\ecommerceBk\nginx-1.21.6/logs/nginx.pid" failed (2: El sistema no puede encontrar el archivo especificado)
+2022/02/23 18:58:10 [notice] 5180#14300: signal process started
+2022/02/23 18:58:10 [error] 5180#14300: CreateFile() "C:\Users\heiir\Desktop\ecommerceBk\nginx-1.21.6/logs/nginx.pid" failed (2: El sistema no puede encontrar el archivo especificado)
+2022/02/23 18:59:33 [notice] 12172#5328: signal process started
+2022/02/23 19:03:26 [notice] 2468#4720: signal process started

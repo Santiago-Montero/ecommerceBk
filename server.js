@@ -9,12 +9,21 @@ const { Router } = express;
 const parseArgs = require('minimist')
 const configEnv = require('./config.js')
 
+
+
 console.log('NODE_ENV : ' + configEnv.NODE_ENV)
 
 const routerProductos = Router();
 
 const args = parseArgs(process.argv.slice(2));
-app.listen(args.port || 3000)
+
+// console.log(args.modo)
+
+// app.listen(args.port || 3000)
+// pm2 start server.js --name="Server1" -- watch -- 8081 FORK
+// pm2 start server.js --name="Server2" -- watch  -i max -- 8082 CLUSTER
+
+app.listen(parseInt(process.argv[2])|| 8080)
 
 
 routerProductos.use(express.static('./views/css'));
@@ -98,14 +107,6 @@ const memoria = [
 
 const argsDeEntrada = [args]
 
-// console.log(process.cwd()) // ruta
-// console.log(process.pid) // ip
-// console.log(process.version) // de node
-// console.log(process.title)
-// console.log(process.platform)
-// console.log(process.memoryUsage())
-
-
 app.engine(
     "handlebars",
     handlebars.engine()
@@ -120,6 +121,10 @@ app.get('/' , async (req,res) => {
     if(req.session.user) req.session.user = ''
     res.render('logIn') ;
 })
+app.get('/data', (req,res) => {
+    res.send('Server express')
+})
+
 app.get('/info', (req,res) => {
     res.render('info', {
         info_exist : info ? true : false,
