@@ -20,10 +20,10 @@ const args = parseArgs(process.argv.slice(2));
 // console.log(args.modo)
 
 // app.listen(args.port || 3000)
-// pm2 start server.js --name="Server1" -- watch -- 8081 FORK
-// pm2 start server.js --name="Server2" -- watch  -i max -- 8082 CLUSTER
-
-app.listen(parseInt(process.argv[2])|| 8080)
+// pm2 start server.js --name="Server1" --watch -- 8081 FORK
+// pm2 start server.js --name="Server2" --watch  -i max -- 8082 CLUSTER
+const PORT = parseInt(process.argv[2])|| 8080
+app.listen(PORT)
 
 
 routerProductos.use(express.static('./views/css'));
@@ -122,7 +122,7 @@ app.get('/' , async (req,res) => {
     res.render('logIn') ;
 })
 app.get('/data', (req,res) => {
-    res.send('Server express')
+    res.send('Server expresSs ' + PORT)
 })
 
 app.get('/info', (req,res) => {
