@@ -70,7 +70,7 @@ app.use(session({
     secret : 'thesession',
     resave : false,
     saveUninitialized : false
-}))*/
+}))
 
 // MONGO ATLAS
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -91,7 +91,7 @@ app.use(
         },
     })
 );
-
+*/
 /*
     routerProductos.use(session({
         store : new MongoStore({
