@@ -139,8 +139,7 @@ app.get("/", (req, res) => {
     // let productos = await productosDao.getAll()
     // console.log(productos)
     // INICIO DE SESION
-    if (req.session.user) req.session.user = "";
-    else req.session.user = "juan";
+    if (!req.session.user) req.session.user = "";
     console.log('estoy en el log');
     console.log(req.session.user);
     res.render("logIn");
@@ -202,7 +201,7 @@ routerProductos.post("/user",auth, async (req, res) => {
     else admin = false;
     console.log(user_name)
     // req.session.user =  req.session.user ? user_name  : user_name
-    req.session.user = user_name;
+    req.session?.user = user_name;
     // carga de productos
     const productos = await productosDao.getAll();
     console.log(productos);
