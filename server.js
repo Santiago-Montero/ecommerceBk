@@ -139,7 +139,8 @@ app.get("/", (req, res) => {
     // let productos = await productosDao.getAll()
     // console.log(productos)
     // INICIO DE SESION
-    if (!req.session.user) req.session.user = "";
+    if (req.session.user) req.session.user = req.session.user;
+    else req.session.user = " "
     console.log('estoy en el log');
     console.log(req.session.user);
     res.render("logIn");
