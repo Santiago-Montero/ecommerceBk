@@ -71,11 +71,12 @@ app.use(session({
     resave : false,
     saveUninitialized : false
 }))
-
+*/
 // MONGO ATLAS
+/*
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri =
-    "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
+"mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
 
 app.use(
     session({
@@ -85,15 +86,15 @@ app.use(
         }),
         secret: "thesession",
         resave: true,
-        saveUninitialized: true,
-        cookie: {
-            maxAge: 40000,
-        },
+        saveUninitialized: true
     })
 );
 */
-/*
-    routerProductos.use(session({
+const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+const uri =
+    "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
+
+    app.use(session({
         store : new MongoStore({
             mongoUrl : uri,
             mongoOptions : advancedOptions
@@ -114,7 +115,7 @@ app.use(
             res.end('Bienvenido')
         }
     })
-*/
+
 
 const info = [
     {
@@ -139,11 +140,14 @@ app.get("/", (req, res) => {
     // let productos = await productosDao.getAll()
     // console.log(productos)
     // INICIO DE SESION
-    /*
-    if (req.session.user) req.session.user = req.session.user;
-    else req.session.user = " "
+    
+    if(req.session.user){
+        req.session.user = 'usuario';
+    }else{ 
+        req.session.user = "anonimo"
+    }
     console.log('estoy en el log');
-    console.log(req.session.user);*/
+    console.log(req.session.user);
     res.render("logIn");
 });
 
@@ -166,7 +170,7 @@ app.get("/info", (req, res) => {
 let admin = false;
 
 const auth = (req, res, next) => {
-    if (req.session?.user !== "") {
+    if (req.session?.user) {
         return next();
     } else {
         mensaje = "Error de autorizacion";
@@ -196,14 +200,13 @@ app.get("/logout", (req, res) => {
     });
 });
 
-routerProductos.post("/user",auth, async (req, res) => {
+routerProductos.post("/user", async (req, res) => {
     logger.info('Esta en la ruta /api/productos/user por el metodo POST')
     const user_name = req.body.nombre;
     if (user_name == "santi") admin = true;
     else admin = false;
     console.log(user_name)
-    // req.session.user =  req.session.user ? user_name  : user_name
-    req.session.user = user_name;
+    // if(req.session) req.session.user = user_name
     // carga de productos
     const productos = await productosDao.getAll();
     console.log(productos);
