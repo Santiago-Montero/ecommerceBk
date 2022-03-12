@@ -43,7 +43,7 @@ const args = parseArgs(process.argv.slice(2));
 // pm2 start server.js --name="Server2" --watch  -i max -- 8082 CLUSTER
 const PORT = parseInt(process.argv[2]) || 8080; 
 const MODE = process.argv[3] || 'CLUSTER'
-app.listen( process.env.PORT || PORT);
+app.listen( process.env.PORT || 8080);
 
 routerProductos.use(express.static("./views/css"));
 routerProductos.use(express.static("./views/js"));
