@@ -1,6 +1,6 @@
 module.exports = {
     mongodb: {
-        url: 'mongodb://localhost/ecommerceBk',
+        url: 'mongodb://'+process.env.PORT || 8080+'/ecommerceBk',
         options: {
             useNewUrlParser: true,
             useUnifiedTopology: true,
