@@ -89,10 +89,11 @@ app.use(
         saveUninitialized: true
     })
 );
+
 */
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri =
-    "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
+    process.env.DB_URL || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
 
     app.use(session({
         store : new MongoStore({
@@ -101,10 +102,7 @@ const uri =
         }),
         secret : 'thesession',
         resave : true,
-        saveUninitialized : true,
-        cookie : {
-            maxAge : 40000
-        }
+        saveUninitialized : true
     }))
     app.get('/mongo' , (req, res) => {
         if(req.session.views){
