@@ -155,7 +155,6 @@ app.get("/api/random", (req, res) => {
 });
 
 app.get("/info", (req, res) => {
-    console.log(PORT)
     logger.info('Esta en la ruta /info por el metodo GET')
     res.render("info", {
         info_exist: info ? true : false,
@@ -165,6 +164,7 @@ app.get("/info", (req, res) => {
         argsDeEntrada,
     });
 });
+
 let admin = false;
 
 const auth = (req, res, next) => {
