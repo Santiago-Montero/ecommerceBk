@@ -145,7 +145,7 @@ app.get("/", (req, res) => {
         req.session.user = "anonimo"
     }*/
     console.log('estoy en el log');
-    console.log(req.session.user);
+
     res.render("logIn");
 });
 
