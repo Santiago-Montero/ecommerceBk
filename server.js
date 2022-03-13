@@ -73,10 +73,10 @@ app.use(session({
 }))
 */
 // MONGO ATLAS
-/*
+
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri =
-"mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
+    process.env.DB_URL || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
 
 app.use(
     session({
@@ -90,7 +90,7 @@ app.use(
     })
 );
 
-*/
+/*
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri =
     process.env.DB_URL || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
@@ -113,7 +113,7 @@ const uri =
             res.end('Bienvenido')
         }
     })
-
+*/
 
 const info = [
     {
