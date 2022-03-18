@@ -66,10 +66,10 @@ routerProductos.use(
     })
 );
 // para tomar los datos por body
-/*
+
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri =
-    process.env.DB_URL || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
+    process.env.DB_URL_SESSION || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
 const db = {
         store : new MongoStore({
             mongoUrl : uri,
@@ -91,7 +91,7 @@ const db = {
             res.end('Bienvenido')
         }
     })
-*/
+
 
 const info = [
     {
