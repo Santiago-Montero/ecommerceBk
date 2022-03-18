@@ -185,7 +185,7 @@ routerProductos.post("/user", async (req, res) => {
     
     const usuario_db = await usuariosDao.getByMail(user_mail);
     if(usuario_db[0].password == user_password){
-        // if(!req.session.user) req.session.user = usuario_db 
+        if(!req.session.user) req.session.user = usuario_db 
         if(usuario_db[0].nombre == "Santi"){
             admin = true;
             logger.trace('Bienvenido Admin')
