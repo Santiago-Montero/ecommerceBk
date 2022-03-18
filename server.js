@@ -67,7 +67,7 @@ routerProductos.use(
 );
 // para tomar los datos por body
 
-
+/*
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri = process.env.DB_URL_SESSION || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
 const db = {
@@ -79,7 +79,7 @@ const db = {
     resave : true,
     saveUninitialized : true
 }
-routerProductos.use(session(db))
+routerProductos.use(session(db))*/
 
 app.get('/mongo' , (req, res) => {
     if(req.session.views){
