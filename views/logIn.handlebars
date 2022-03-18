@@ -3,10 +3,17 @@
 <div class="container">
     <form action="/api/productos/user" method="POST">
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" name="nombre" class="form-control" id="nombre">
+            <label for="mail" class="form-label">Mail</label>
+            <input type="text" name="mail" class="form-control" id="mail">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="text" name="password" class="form-control" id="password">
         </div>
         <button  type="submit"  class="btn btn-primary">Guardar</button>
     </form>
 </div>
 
+
+<h2> No tenes cuenta ? </h2>
+<a href="/register"> Registrate ahora ! </a>

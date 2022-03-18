@@ -1,9 +1,10 @@
 <div class="container mt-5">
-    {{#if user_name}}
+    {{#if user}}
         <div class="alert alert-primary" role="alert">
-            Bienvenido {{user_name}} !! 
+            Bienvenido {{user.nombre}} !! 
+            <img src={{user.foto}} alt="foto usuario" class="avatar">
+            <a href= "/"type="button" class="btn btn-danger">Salir</a>
         </div>
-        <a href= "/"type="button" class="btn btn-danger">Salir</a>
     {{/if}}
     {{#if productsExist }}
     <div class="cards_productos">
@@ -30,6 +31,7 @@
                     <p class="card-text" > Precio : {{precio}}</p>
                     <p class="card-text" >Stock : {{stock}}</p>
                 </div>
+                
             </div>
             {{/producto}}
             {{#if admin}}

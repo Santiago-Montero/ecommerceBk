@@ -1,4 +1,5 @@
 const { productosDao } = require("./contenedores/daos/index.js");
+const { usuariosDao } = require("./contenedores/daos/index.js");
 const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -49,11 +50,16 @@ routerProductos.use(express.static("./views/css"));
 routerProductos.use(express.static("./views/js"));
 
 app.use(compression());
+app.use(express.json());
 app.use("/api/productos/", routerProductos);
 
 // para tomar los datos por body
 routerProductos.use(express.json());
-
+app.use(
+    express.urlencoded({
+        extended: true,
+    })
+);
 routerProductos.use(
     express.urlencoded({
         extended: true,
@@ -61,41 +67,10 @@ routerProductos.use(
 );
 // para tomar los datos por body
 
-// MONGO
-/*
-app.use(session({
-    store : new MongoStore({
-        mongoUrl: 'mongodb://localhost/sessions'
-    }),
-    secret : 'thesession',
-    resave : false,
-    saveUninitialized : false
-}))
-*/
-// MONGO ATLAS
-/*
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const uri =
     process.env.DB_URL || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
-
-app.use(
-    session({
-        store: new MongoStore({
-            mongoUrl: uri,
-            mongoOptions: advancedOptions,
-        }),
-        secret: "thesession",
-        resave: true,
-        saveUninitialized: true
-    })
-);
-*/
-/*
-const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
-const uri =
-    process.env.DB_URL || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
-
-    app.use(session({
+const db = {
         store : new MongoStore({
             mongoUrl : uri,
             mongoOptions : advancedOptions
@@ -103,7 +78,10 @@ const uri =
         secret : 'thesession',
         resave : true,
         saveUninitialized : true
-    }))
+    }
+    app.use(session(db))
+    routerProductos.use(session(db))
+
     app.get('/mongo' , (req, res) => {
         if(req.session.views){
             req.session.views ++
@@ -113,7 +91,7 @@ const uri =
             res.end('Bienvenido')
         }
     })
-*/
+
 
 const info = [
     {
@@ -134,20 +112,22 @@ app.set("view engine", "handlebars");
 
 app.get("/", (req, res) => {
     logger.info('Esta en la ruta / por el metodo GET ')
-    
-    // let productos = await productosDao.getAll()
-    // console.log(productos)
-    // INICIO DE SESION
-    /*
-    if(req.session.user){
-        req.session.user = 'usuario';
-    }else{ 
-        req.session.user = "anonimo"
-    }*/
-    console.log('estoy en el log');
-
     res.render("logIn");
 });
+
+app.get('/register', (req, res) => {
+    logger.info('Esta en la ruta /register por el metodo GET ')
+    res.render("register");
+});
+app.post('/register',async (req, res) => {
+    logger.info('Esta en la ruta /register por el metodo POST ')
+    const newUsuario = req.body 
+    const usuario = await usuariosDao.save(newUsuario);
+    // agregar validacion
+    console.log(usuario);
+    res.render("/");
+});
+
 
 app.get("/api/random", (req, res) => {
     console.log(`Get randoms [${process.pid}]  PORT :${PORT}`)
@@ -200,21 +180,26 @@ app.get("/logout", (req, res) => {
 
 routerProductos.post("/user", async (req, res) => {
     logger.info('Esta en la ruta /api/productos/user por el metodo POST')
-    const user_name = req.body.nombre;
-    if (user_name == "santi") admin = true;
-    else admin = false;
-    console.log(user_name)
-    // if(req.session) req.session.user = user_name
-    // carga de productos
-    const productos = await productosDao.getAll();
-    console.log(productos);
-    if (user_name) {
+
+    const user_mail = req.body.mail;
+    const user_password = req.body.password;
+    
+    const usuario_db = await usuariosDao.getByMail(user_mail);
+    if(usuario_db[0].password == user_password){
+        if(!req.session.user) req.session.user = usuario_db 
+        if(usuario_db[0].nombre == "Santi"){
+            admin = true;
+            logger.trace('Bienvenido Admin')
+        } 
+        else admin = false;
+        const productos = await productosDao.getAll();
         res.render("home", {
             productos,
             productsExist: productos ? true : false,
-            user_name,
+            user : usuario_db[0],
+            admin
         });
-    } else {
+    }else {
         mensaje = "Ingresa Para poder ver los productos";
         logger.warn(mensaje);
         errorType = "404";
@@ -224,6 +209,7 @@ routerProductos.post("/user", async (req, res) => {
             error: mensaje ? true : false,
         });
     }
+    
 });
 
 routerProductos.get("/", auth, async (req, res) => {
