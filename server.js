@@ -67,30 +67,29 @@ routerProductos.use(
 );
 // para tomar los datos por body
 
-const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
-const uri =
-    process.env.DB_URL_SESSION || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
-const db = {
-        store : new MongoStore({
-            mongoUrl : uri,
-            mongoOptions : advancedOptions
-        }),
-        secret : 'thesession',
-        resave : true,
-        saveUninitialized : true
-    }
-    app.use(session(db))
-    routerProductos.use(session(db))
 
-    app.get('/mongo' , (req, res) => {
-        if(req.session.views){
-            req.session.views ++
-            res.send('<h2> Views: ' + req.session.views + '</h2>')
-        }else{
-            req.session.views = 1;
-            res.end('Bienvenido')
-        }
-    })
+const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+const uri = process.env.DB_URL_SESSION || "mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority";
+const db = {
+    store : new MongoStore({
+        mongoUrl : uri,
+        mongoOptions : advancedOptions
+    }),
+    secret : 'thesession',
+    resave : true,
+    saveUninitialized : true
+}
+routerProductos.use(session(db))
+
+app.get('/mongo' , (req, res) => {
+    if(req.session.views){
+        req.session.views ++
+        res.send('<h2> Views: ' + req.session.views + '</h2>')
+    }else{
+        req.session.views = 1;
+        res.end('Bienvenido')
+    }
+})
 
 
 const info = [
@@ -186,7 +185,7 @@ routerProductos.post("/user", async (req, res) => {
     
     const usuario_db = await usuariosDao.getByMail(user_mail);
     if(usuario_db[0].password == user_password){
-        if(!req.session.user) req.session.user = usuario_db 
+        // if(!req.session.user) req.session.user = usuario_db 
         if(usuario_db[0].nombre == "Santi"){
             admin = true;
             logger.trace('Bienvenido Admin')
