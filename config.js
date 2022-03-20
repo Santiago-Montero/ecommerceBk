@@ -7,8 +7,8 @@ module.exports = {
     DB_URL_SESSION : process.env.DB_URL_SESSION || 'mongodb+srv://santi:santi@cluster0.j0w00.mongodb.net/sessions?retryWrites=true&w=majority',
     MAIL_ADMIN:  process.env.MAIL_ADMIN,
     WPP_ADMIN: process.env.WPP_ADMIN,
-    ACCOUNTS_ID : process.env.ACCOUNTS_ID,
-    ACCOUNTS_ID : process.env.AUTH_TOKEN,
+    AC_COUNTS_ID : process.env.AC_COUNTS_ID,
+    AUTH_TOKEN : process.env.AUTH_TOKEN,
     PASS_EMAILER : process.env.PASS_EMAILER
     // PORT : process.env.PORT || 3000
 }

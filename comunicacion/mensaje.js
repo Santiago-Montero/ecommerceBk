@@ -2,8 +2,8 @@ const configEnv = require("../config.js");
 
 const twilio = require('twilio')
 
-const accountSid = configEnv.ACCOUNTS_ID
-const authToken = configEnv.ACCOUNTS_ID
+const accountSid = configEnv.AC_COUNTS_ID
+const authToken = configEnv.AUTH_TOKEN
 
 const client = twilio(accountSid, authToken)
 
