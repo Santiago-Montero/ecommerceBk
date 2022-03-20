@@ -34,6 +34,7 @@ log4js.configure({
 console.log("NODE_ENV : " + configEnv.NODE_ENV);
 
 const routerProductos = Router();
+const routerCarritos = Router();
 
 const args = parseArgs(process.argv.slice(2));
 
@@ -48,13 +49,17 @@ app.listen( process.env.PORT || 8080);
 
 routerProductos.use(express.static("./views/css"));
 routerProductos.use(express.static("./views/js"));
+routerCarritos.use(express.static("./views/css"));
+routerCarritos.use(express.static("./views/js"));
 
 app.use(compression());
 app.use(express.json());
 app.use("/api/productos/", routerProductos);
+app.use("/api/carritos/", routerCarritos);
 
 // para tomar los datos por body
 routerProductos.use(express.json());
+routerCarritos.use(express.json());
 app.use(
     express.urlencoded({
         extended: true,
@@ -65,10 +70,15 @@ routerProductos.use(
         extended: true,
     })
 );
+routerCarritos.use(
+    express.urlencoded({
+        extended: true,
+    })
+);
 // para tomar los datos por body
 
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
-const uri = process.env.DB_URL_SESSION;
+const uri = configEnv.DB_URL_SESSION;
 const db = {
     store : new MongoStore({
         mongoUrl : uri,
@@ -80,18 +90,6 @@ const db = {
 }
 
 routerProductos.use(session(db))
-
-app.get('/mongo' , (req, res) => {
-    if(req.session.views){
-        req.session.views ++
-        res.send('<h2> Views: ' + req.session.views + '</h2>')
-    }else{
-        req.session.views = 1;
-        res.end('Bienvenido')
-    }
-})
-
-
 const info = [
     {
         ruta: process.cwd(),
@@ -144,10 +142,10 @@ app.get("/info", (req, res) => {
     });
 });
 
-let admin = false;
-
 const auth = (req, res, next) => {
-    if (req.session?.user) {
+    if (req.session.user) {
+        if(!req.session.admin) req.session.admin = req.session.user.admin == true ? true : false
+        console.log('estoy en auth');
         return next();
     } else {
         mensaje = "Error de autorizacion";
@@ -161,13 +159,13 @@ const auth = (req, res, next) => {
     }
 };
 
-app.get("/logout", (req, res) => {
+routerProductos.get("/logout", (req, res) => {
     logger.info('Esta en la ruta /logout por el metodo GET')
     req.session.destroy((error) => {
         if (error) {
-            mensaje = "No existe ese producto";
+            mensaje = "Hubo un error al salir";
             logger.error(mensaje);
-            errorType = "404";
+            errorType = "500";
             res.render("error", {
                 errorType,
                 mensaje,
@@ -185,18 +183,14 @@ routerProductos.post("/user", async (req, res) => {
     
     const usuario_db = await usuariosDao.getByMail(user_mail);
     if(usuario_db[0].password == user_password){
-        if(!req.session.user) req.session.user = usuario_db 
-        if(usuario_db[0].nombre == "Santi"){
-            admin = true;
-            logger.trace('Bienvenido Admin')
-        } 
-        else admin = false;
+        if(!req.session.user) req.session.user = usuario_db[0]
+        if(!req.session.admin) req.session.admin = usuario_db[0].admin == true ? true : false
         const productos = await productosDao.getAll();
         res.render("home", {
             productos,
             productsExist: productos ? true : false,
             user : usuario_db[0],
-            admin
+            admin : req.session.admin
         });
     }else {
         mensaje = "Ingresa Para poder ver los productos";
@@ -215,21 +209,85 @@ routerProductos.get("/", auth, async (req, res) => {
     logger.info('Esta en la ruta /api/productos/ por el metodo GET')
     // carga de productos
     const productos = await productosDao.getAll();
-    console.log(productos);
     res.render("home", {
         productos,
         productsExist: productos ? true : false,
-        user_name,
+        user :  req.session.user[0],
+        admin : req.session.admin
     });
 });
+
+routerProductos.put("/", async (req, res) => {
+    const codigo = req.body.codigo;
+    // FORMS NO PEUDEN MANDAR PUTS NOSE COMO CAMBIAR
+    logger.info('Esta en la ruta /api/productos/'+ codigo+' por el metodo PUT')
+    console.log(codigo);
+    
+    const productoViejo = await productosDao.getByRandom(id);    
+    console.log(productoViejo);
+    if(productoViejo){
+        const producto = req.body
+        console.log(producto)
+        if(producto){
+            await productosDao.update(producto)
+            const productos = await productosDao.getAll();
+            res.render("home", {
+                productos,
+                productsExist: productos ? true : false,
+                admin : req.session.admin
+            });
+        }else{
+            mensaje = "No hay nada que actualizar";
+            logger.error(mensaje);
+            errorType = "404";
+            res.render("error", {
+                errorType,
+                mensaje,
+                error: mensaje ? true : false,
+            });
+        }
+    }else{
+        mensaje = "No existe ese producto";
+        logger.error(mensaje);
+        errorType = "404";
+        res.render("error", {
+            errorType,
+            mensaje,
+            error: mensaje ? true : false,
+        });
+    }
+});
+routerProductos.get('/:id', auth, async (req,res) => {
+    const id = req.params.id;
+    logger.info('Esta en la ruta /api/productos/'+ id+' por el metodo GET')
+    console.log(id);
+    const productoViejo = await productosDao.getByRandom(id);
+    if(productoViejo){
+        console.log(productoViejo)
+        res.render("actualizar", {
+            productoViejo,
+            productExist: productoViejo ? true : false,
+        });
+    }else{
+        mensaje = "No se encontro ese producto";
+        logger.warn(mensaje);
+        errorType = "404";
+        res.render("error", {
+            errorType,
+            mensaje,
+            error: mensaje ? true : false,
+        });
+        // res.status(404).json(mensaje);
+    }
+})
 routerProductos.get("/admin", async (req, res) => {
     logger.info('Esta en la ruta /api/productos/admin por el metodo GET')
     const productos = await productosDao.getAll();
-    if (admin) {
+    if (req.session.admin) {
         res.render("home", {
             productos,
             productExist: productos ? true : false,
-            admin,
+            admin : req.session.admin,
         });
     } else {
         mensaje = "No tiene permiso para estar aca";
@@ -243,15 +301,16 @@ routerProductos.get("/admin", async (req, res) => {
         // res.status(404).json(mensaje);
     }
 });
+/*
 routerProductos.get("/:id", async (req, res) => {
     const id = req.params.id;
     logger.info('Esta en la ruta /api/productos/'+id+' por el metodo GET')
-    const producto = await productosDao.getById(id);
+    const producto = await productosDao.getByRandom(id);
     if (producto) {
         res.render("home", {
             producto,
             productExist: producto ? true : false,
-            admin,
+            admin : req.session.admin,
         });
     } else {
         mensaje = "No existe ese producto";
@@ -264,8 +323,8 @@ routerProductos.get("/:id", async (req, res) => {
         });
         // res.status(404).json(mensaje);
     }
-});
-routerProductos.post("/", async (req, res) => {
+});*/
+routerProductos.post("/", auth, async (req, res) => {
     logger.info('Esta en la ruta /api/productos/ por el metodo POST')
     const { nombre, descripcion, stock, precio, foto } = req.body;
     const productoNuevo = {
@@ -275,14 +334,14 @@ routerProductos.post("/", async (req, res) => {
         precio,
         foto,
         timestamp: moment().format("l"),
-        codigo: Number(productosDao.getRandom()),
-        id: productosDao.getId(),
+        codigo: Number(productosDao.getRandom())
     };
     if (await productosDao.save(productoNuevo)) {
         const productos = await productosDao.getAll();
         res.render("home", {
             productos,
             productsExist: productos ? true : false,
+            admin : req.session.admin
         });
     } else {
         mensaje = "No se pudo crear el producto";
@@ -293,28 +352,13 @@ routerProductos.post("/", async (req, res) => {
             mensaje,
             error: mensaje ? true : false,
         });
-        // res.status(404).json(mensaje);
     }
 });
-routerProductos.put("/:id", async (req, res) => {
-    const id = req.params.id;
-    logger.info('Esta en la ruta /api/productos/'+ id+' por el metodo put')
-    console.log(id);
-    /*
-      let productoViejo = await productosDao.getById(id)
-      console.log(`SOY PRODUCTO VIEJO ${productoViejo}`)
-      
-      if(productoViejo){
-          if(req.body){
-              let { nombre, descripcion, stock, precio, foto} = req.body
-              await productosDao.updateProducto(nombre, descripcion, stock, precio, foto, productoViejo)
-              res.render('home') 
-          }else{
-              mensaje = {'error' :'no hay que actualizar'}
-              res.json(mensaje)
-          }
-      }else{
-          mensaje = { error: 'No existe ese producto' };
-          res.status(404).json(mensaje);
-      }*/
-});
+
+
+
+// para el carrito pense hacer algo como con socket io para comunicar front end con back
+routerCarritos.get('/' , (req,res) => {
+    console.log('carrito')
+})
+

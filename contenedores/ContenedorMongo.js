@@ -11,27 +11,29 @@ class ContenedorMongoDb {
     constructor(nombreColeccion, esquema) {
         this.coleccion = mongoose.model(nombreColeccion, esquema)
     }
-    static id = 3
-    getId(){
-        id++
-        return id 
-    }
     getRandom(){
         return Math.floor(Math.random() * (999999 - 1000)) + 1000;
     }
     async getById(id) {
         try {
-            const docs = await this.coleccion.find({ 'id': id }).lean()
-            if (docs.length == 0) {
-                console.log('No se encontro ese id')
-            } else {
-                return docs
+            const docs = await this.coleccion.find({ '_id': id }).lean()
+            if (docs.length >= 1) {
+                return docs[0]
             }
         } catch (err) {
             console.log(err)
         }
     }
-
+    async getByRandom(id) {
+        try {
+            const docs = await this.coleccion.find({ 'codigo': id }).lean()
+            if (docs.length >= 1) {
+                return docs[0]
+            }
+        } catch (err) {
+            console.log(err)
+        }
+    }
     async getAll() {
         try {
             const docs = await this.coleccion.find({}).lean()
@@ -52,8 +54,7 @@ class ContenedorMongoDb {
 
     async update(elemento) {
         try {
-            
-            const { n, nModified } = await this.coleccion.replaceOne({ 'id': elemento.id }, elemento)
+            const { n, nModified } = await this.coleccion.replaceOne({ 'codigo' : elemento.codigo }, elemento)
             if (n == 0 || nModified == 0) {
                 console.log('No se pudo actualizar no se encontro el elemento')
             } else {
@@ -66,7 +67,7 @@ class ContenedorMongoDb {
 
     async deleteById(id) {
         try {
-            await this.coleccion.deleteOne({ 'id': id })
+            await this.coleccion.deleteOne({ '_id': id })
         } catch (err) {
             console.log(err)
         }

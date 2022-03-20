@@ -1,0 +1,33 @@
+<div class="container mt-5">
+    {{#if productExist }}
+        <form action="/api/productos/god" method="post">
+        {{#productoViejo }}
+            <div class="container mt-5">
+                <input type="hidden" name="_method" value="PUT"> {{!-- los form por ahora no pueden mandar peticiones PUT --}}
+                <input type="hidden" value="{{codigo}}" name="codigo" >
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input class="form-control" type="text" value="{{nombre}}" name="nombre">
+                </div>
+                <div class="form-group">
+                    <label for="descripcion">Descripcion</label>
+                    <input class="form-control" type="text" value="{{descripcion}}" name="descripcion">
+                </div>
+                <div class="form-group">
+                    <label for="stock">Stock</label>
+                    <input class="form-control" type="number" value="{{stock}}" name="stock">
+                </div>
+                <div class="form-group">
+                    <label for="precio">Precio</label>
+                    <input class="form-control" type="number" value="{{precio}}" name="precio">
+                </div>
+                <div class="form-group">
+                    <label for="foto">Foto</label>
+                    <input class="form-control" type="text"  value="{{foto}}" name="foto">
+                </div>
+            </div>
+                <input type="submit"  class="btn btn-primary" value="Actualizar Producto">
+        {{/productoViejo }}
+        </form>
+    {{/if}}
+</div>

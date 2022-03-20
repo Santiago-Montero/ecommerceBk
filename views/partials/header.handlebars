@@ -10,6 +10,19 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/api/productos/">Inicio</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Carrito</a>
+                </li>
+                <li class="nav-item">
+                    {{#if user}}
+                            <div class="userNav">
+                                <a class="nav-link active" aria-current="page" href="/">{{user.nombre}}</a>
+                                <img src={{user.foto}} alt="foto usuario" class="avatarNav">
+                            </div>
+                    {{else}}
+                        <a class="nav-link active" aria-current="page" href="/api/productos/user">Usuario</a>
+                    {{/if}}
+                </li>
             </ul>
         </div>
     </div>

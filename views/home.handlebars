@@ -3,72 +3,31 @@
         <div class="alert alert-primary" role="alert">
             Bienvenido {{user.nombre}} !! 
             <img src={{user.foto}} alt="foto usuario" class="avatar">
-            <a href= "/"type="button" class="btn btn-danger">Salir</a>
+            <a href= "/api/productos/logout" type="button" class="btn btn-danger">Salir</a>
         </div>
     {{/if}}
-    {{#if productsExist }}
-    <div class="cards_productos">
-        {{#each productos}}
-            <div class="card">
-                <img src="{{this.foto}}" alt="{{this.nombre}}" class="card-img-top"  name="foto" >
-                <div class="card-body">
-                    <h5 class="card-title">{{this.nombre}}</h5>
-                    <p class="card-text" >{{this.descripcion}}</p>
-                    <p class="card-text" > Precio : {{this.precio}}</p>
-                    <p class="card-text" >Stock : {{this.stock}}</p>
-                </div>
-            </div>
-        {{/each}}
-    </div>
-    {{else}} {{#if productExist}}
-            
-            {{#producto}}
-            <div class="card">
-                <img src="{{foto}}" alt="{{nombre}}" class="card-img-top"  name="foto" >
-                <div class="card-body">
-                    <h5 class="card-title">{{nombre}}</h5>
-                    <p class="card-text" >{{descripcion}}</p>
-                    <p class="card-text" > Precio : {{precio}}</p>
-                    <p class="card-text" >Stock : {{stock}}</p>
-                </div>
-                
-            </div>
-            {{/producto}}
-            {{#if admin}}
-                {{#producto}}
-                    <form action="/api/productos/:{{_id}}" method="put">
-                        <div class="container mt-5">
-                            <div class="form-group">
-                                <label for="nombre">Nombre</label>
-                                <input class="form-control" type="text" value="{{nombre}}" name="nombre">
-                            </div>
-                            <div class="form-group">
-                                <label for="descripcion">Descripcion</label>
-                                <input class="form-control" type="text" value="{{descripcion}}" name="descripcion">
-                            </div>
-                            <div class="form-group">
-                                <label for="stock">Stock</label>
-                                <input class="form-control" type="number" value="{{stock}}" name="stock">
-                            </div>
-                            <div class="form-group">
-                                <label for="precio">Precio</label>
-                                <input class="form-control" type="number" value="{{precio}}" name="precio">
-                            </div>
-                            <div class="form-group">
-                                <label for="foto">Foto</label>
-                                <input class="form-control" type="text"  value="{{foto}}" name="foto">
-                            </div>
-                            <button type="submit"  class="btn btn-primary">Actualizar Producto</button>
+        {{#if admin}}
+        {{#if productsExist }}
+            <div class="cards_productos">
+                {{#each productos}}
+                    <div class="card">
+                        <a href="/api/productos/{{this.codigo}}"> 
+                            <img src="https://i.imgur.com/co9hKNo.png" alt="pencil" class="pencil">
+                        </a>
+                        <img src="{{this.foto}}" alt="{{this.nombre}}" class="card-img-top productoImg"  name="foto" >
+                        <div class="card-body">
+                            <h5 class="card-title">{{this.nombre}}</h5>
+                            <p class="card-text" >{{this.descripcion}}</p>
+                            <p class="card-text" > Precio : {{this.precio}}</p>
+                            <p class="card-text" >Stock : {{this.stock}}</p>
                         </div>
-                    </form>
-                {{/producto}}
-            {{/if}}
-    {{else}}
-        <h1>No se encontro datos</h1>
-    {{/if}}
-    {{/if}}
-    {{#if admin }}
-    <h1>Usted es admin - Agregar Producto </h1>
+                        <a href="/api/carritos/" class="btn btn-info"> <p>Agregar Al carrito </p> </a>
+                        
+                    </div>
+                {{/each}}
+            </div>
+        {{/if}}
+        <h1>Usted es admin - Agregar Producto </h1>
         <form action="/api/productos/" method="post">
             <div class="container mt-5">
                 <div class="form-group">
@@ -94,7 +53,26 @@
                 <button type="submit"  class="btn btn-primary">Cargar Producto</button>
             </div>
         </form>
+    {{else}}
+    {{#if productsExist }}
+        <div class="cards_productos">
+            {{#each productos}}
+                <div class="card">
+                    <img src="{{this.foto}}" alt="{{this.nombre}}" class="card-img-top"  name="foto" >
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.nombre}}</h5>
+                        <p class="card-text" >{{this.descripcion}}</p>
+                        <p class="card-text" > Precio : {{this.precio}}</p>
+                        <p class="card-text" >Stock : {{this.stock}}</p>
+                    </div>
+                    <button class="btn btn-info"> Agregar Al carrito </button>
+                    
+                </div>
+            {{/each}}
+        </div>
     {{/if}}
+{{/if}}
+
 </div>
 
 

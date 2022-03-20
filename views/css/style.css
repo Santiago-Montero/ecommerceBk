@@ -4,16 +4,33 @@
     justify-content: space-between;
 }
 .card{
+    position: relative;
     display: flex;
     justify-content: center;
     flex-flow: column wrap;
     align-items: center;
 }
-.card img{
+.productoImg{
     width: 150px;
-    height: 200px;
+    height: auto;
 }
 .avatar{
     width: 50px;
+    height: auto;
+}
+.avatarNav{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+.userNav{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+.pencil{
+    right: 10px;
+    position: absolute;
+    width: 24px;
     height: auto;
 }

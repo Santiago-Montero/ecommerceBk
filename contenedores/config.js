@@ -1,6 +1,8 @@
+const configEnv = require("../config.js");
+
 module.exports = {
     mongodb: {
-        url: process.env.DB_URL,
+        url: configEnv.DB_URL,
         options: {
             useNewUrlParser: true,
             useUnifiedTopology: true,
