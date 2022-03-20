@@ -125,6 +125,7 @@ app.post('/register',async (req, res) => {
     logger.info('Esta en la ruta /register por el metodo POST ')
     const newUsuario = req.body 
     const usuario = await usuariosDao.save(newUsuario);
+
     const mailOptions = {
         from: configEnv.MAIL_ADMIN,
         to: configEnv.MAIL_ADMIN,
@@ -135,8 +136,8 @@ app.post('/register',async (req, res) => {
     .then((res) => console.log(res))
     .catch((err) => console.log(err))
     // agregar validacion
-    console.log(usuario);
-    res.render("/");
+
+    res.render("logIn");
 });
 
 
