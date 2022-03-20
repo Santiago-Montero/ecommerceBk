@@ -1,15 +1,18 @@
-const { productosDao } = require("./contenedores/daos/index.js");
-const { usuariosDao } = require("./contenedores/daos/index.js");
 const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const moment = require("moment");
-const handlebars = require("express-handlebars");
-const app = express();
 const { Router } = express;
 const parseArgs = require("minimist");
-const configEnv = require("./config.js");
 const compression = require("compression");
+const handlebars = require("express-handlebars");
+const configEnv = require("./config.js");
+const { productosDao } = require("./contenedores/daos/index.js");
+const { usuariosDao } = require("./contenedores/daos/index.js");
+const { transporter } = require('./comunicacion/mail')
+const { client } = require('./comunicacion/mensaje')
+
+
 const log4js = require("log4js");
 
 const logger = log4js.getLogger();
@@ -33,6 +36,7 @@ log4js.configure({
 
 console.log("NODE_ENV : " + configEnv.NODE_ENV);
 
+const app = express();
 const routerProductos = Router();
 const routerCarritos = Router();
 
@@ -109,6 +113,7 @@ app.set("view engine", "handlebars");
 
 app.get("/", (req, res) => {
     logger.info('Esta en la ruta / por el metodo GET ')
+    
     res.render("logIn");
 });
 
@@ -120,6 +125,15 @@ app.post('/register',async (req, res) => {
     logger.info('Esta en la ruta /register por el metodo POST ')
     const newUsuario = req.body 
     const usuario = await usuariosDao.save(newUsuario);
+    const mailOptions = {
+        from: configEnv.MAIL_ADMIN,
+        to: configEnv.MAIL_ADMIN,
+        subject: 'Se registro un nuevo ususario',
+        html: `<h1 style="color: blue;">Se registro <span style="color: green;">${usuario.mail}</span></h1>`
+    }
+    transporter.sendMail(mailOptions)
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err))
     // agregar validacion
     console.log(usuario);
     res.render("/");
@@ -185,6 +199,7 @@ routerProductos.post("/user", async (req, res) => {
     if(usuario_db[0].password == user_password){
         if(!req.session.user) req.session.user = usuario_db[0]
         if(!req.session.admin) req.session.admin = usuario_db[0].admin == true ? true : false
+
         const productos = await productosDao.getAll();
         res.render("home", {
             productos,
@@ -212,7 +227,7 @@ routerProductos.get("/", auth, async (req, res) => {
     res.render("home", {
         productos,
         productsExist: productos ? true : false,
-        user :  req.session.user[0],
+        user :  req.session.user,
         admin : req.session.admin
     });
 });
@@ -360,5 +375,33 @@ routerProductos.post("/", auth, async (req, res) => {
 // para el carrito pense hacer algo como con socket io para comunicar front end con back
 routerCarritos.get('/' , (req,res) => {
     console.log('carrito')
+})
+routerCarritos.get('/compra' , (req,res) => {
+    //nuevo pedido de
+    const mailOptions = {
+        from: configEnv.MAIL_ADMIN, // admin
+        to: configEnv.MAIL_ADMIN,
+        subject: 'Nuevo pedido de '+req.session.user.mail,
+        html: `<h1 style="color: blue;">El usuario compro LISTA DE PRODUCTOS AGREGADO AL CARRITO`
+    }
+    transporter.sendMail(mailOptions)
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err))
+
+    client.messages.create({
+        from: 'whatsapp:+14155238886',
+        body: 'Nuevo pedido de '+req.session.user.mail+' El usuario compro LISTA DE PRODUCTOS AGREGADO AL CARRITO',
+        to: 'whatsapp:'+ configEnv.WPP_ADMIN// admin
+    })
+    .then(message => console.log(message.sid))
+    .catch((error) => console.log(error));
+
+    client.messages.create({
+        body: 'Su pedido fue recibido y esta en proceso...',
+        from: '+18285648984',
+        to: req.session.user.telefono
+    })
+    .then((message) =>  console.log(message))
+    .catch((error) =>  console.log(error))
 })
 
