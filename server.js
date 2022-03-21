@@ -379,7 +379,7 @@ routerCarritos.get('/', auth, async (req,res) => {
         user : req.session.user
     });
 })
-routerCarritos.get('/compra' , (req,res) => {
+routerCarritos.get('/compra', auth, async (req,res) => {
     const carrito = req.session.carrito
     const productosCarrito = carrito.productos
     let lista = ``
