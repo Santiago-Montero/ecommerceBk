@@ -1,17 +1,16 @@
 let productosDao
-// let carritosDao
+let carritosDao
+let usuariosDao
 
 const ProductosDaoMongoDb = require('./productos/ProductosMongo.js')
 const UsuariosDaoMongoDb = require('./usuarios/UsuariosMongo.js')
-
-// const CarritosDaoMongoDb = require('./carrito/CarritosDaoMongoDb.js.js')
+const CarritosDaoMongoDb = require('./carritos/CarritosMongo.js')
 productosDao = new ProductosDaoMongoDb()
-// carritosDao = new CarritosDaoMongoDb()
-
+carritosDao = new CarritosDaoMongoDb()
 usuariosDao = new UsuariosDaoMongoDb()
 
 module.exports = {
     productosDao,
     usuariosDao,
-    // carritosDao
+    carritosDao
 };

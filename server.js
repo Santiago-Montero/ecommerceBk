@@ -9,9 +9,10 @@ const handlebars = require("express-handlebars");
 const configEnv = require("./config.js");
 const { productosDao } = require("./contenedores/daos/index.js");
 const { usuariosDao } = require("./contenedores/daos/index.js");
+const { carritosDao } = require("./contenedores/daos/index.js");
 const { transporter } = require('./comunicacion/mail')
 const { client } = require('./comunicacion/mensaje')
-
+const path = require('path');
 
 const log4js = require("log4js");
 
@@ -51,11 +52,14 @@ const PORT = parseInt(process.argv[2]) || 8080;
 const MODE = process.argv[3] || 'CLUSTER'
 app.listen( process.env.PORT || 8080);
 
-routerProductos.use(express.static("./views/css"));
-routerProductos.use(express.static("./views/js"));
-routerCarritos.use(express.static("./views/css"));
-routerCarritos.use(express.static("./views/js"));
-
+// routerProductos.use(express.static("./public/views/css"));
+// routerProductos.use(express.static("./public/views/js"));
+routerProductos.use(express.static(path.join(__dirname, 'public/css')));
+routerProductos.use(express.static(path.join(__dirname, 'public/js')));
+routerCarritos.use(express.static(path.join(__dirname, 'public/css')));
+routerCarritos.use(express.static(path.join(__dirname, 'public/js')));
+// app.use(express.static(path.join(__dirname, 'public/css')));
+// app.use(express.static(path.join(__dirname, 'public/js')));
 app.use(compression());
 app.use(express.json());
 app.use("/api/productos/", routerProductos);
@@ -64,21 +68,10 @@ app.use("/api/carritos/", routerCarritos);
 // para tomar los datos por body
 routerProductos.use(express.json());
 routerCarritos.use(express.json());
-app.use(
-    express.urlencoded({
-        extended: true,
-    })
-);
-routerProductos.use(
-    express.urlencoded({
-        extended: true,
-    })
-);
-routerCarritos.use(
-    express.urlencoded({
-        extended: true,
-    })
-);
+app.use(express.urlencoded({ extended: true}));
+routerProductos.use(express.urlencoded({extended: true }));
+routerCarritos.use(express.urlencoded({extended: true }));
+
 // para tomar los datos por body
 
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -94,6 +87,7 @@ const db = {
 }
 
 routerProductos.use(session(db))
+routerCarritos.use(session(db))
 const info = [
     {
         ruta: process.cwd(),
@@ -108,7 +102,7 @@ const memoria = [{ memoria: process.memoryUsage() }];
 const argsDeEntrada = [args];
 
 app.engine("handlebars", handlebars.engine());
-app.set("views", "./views");
+app.set("views", "./public/views");
 app.set("view engine", "handlebars");
 
 app.get("/", (req, res) => {
@@ -160,6 +154,7 @@ app.get("/info", (req, res) => {
 const auth = (req, res, next) => {
     if (req.session.user) {
         if(!req.session.admin) req.session.admin = req.session.user.admin == true ? true : false
+        console.log(req.session.admin);
         console.log('estoy en auth');
         return next();
     } else {
@@ -200,7 +195,11 @@ routerProductos.post("/user", async (req, res) => {
     if(usuario_db[0].password == user_password){
         if(!req.session.user) req.session.user = usuario_db[0]
         if(!req.session.admin) req.session.admin = usuario_db[0].admin == true ? true : false
-
+        const carrito = {
+            user : req.session.user,
+            productos : []
+        }
+        if(!req.session.carrito) req.session.carrito = carrito
         const productos = await productosDao.getAll();
         res.render("home", {
             productos,
@@ -239,7 +238,7 @@ routerProductos.put("/", async (req, res) => {
     logger.info('Esta en la ruta /api/productos/'+ codigo+' por el metodo PUT')
     console.log(codigo);
     
-    const productoViejo = await productosDao.getByRandom(id);    
+    const productoViejo = await productosDao.getByCodigo(id);    
     console.log(productoViejo);
     if(productoViejo){
         const producto = req.body
@@ -277,7 +276,7 @@ routerProductos.get('/:id', auth, async (req,res) => {
     const id = req.params.id;
     logger.info('Esta en la ruta /api/productos/'+ id+' por el metodo GET')
     console.log(id);
-    const productoViejo = await productosDao.getByRandom(id);
+    const productoViejo = await productosDao.getByCodigo(id);
     if(productoViejo){
         console.log(productoViejo)
         res.render("actualizar", {
@@ -321,7 +320,7 @@ routerProductos.get("/admin", async (req, res) => {
 routerProductos.get("/:id", async (req, res) => {
     const id = req.params.id;
     logger.info('Esta en la ruta /api/productos/'+id+' por el metodo GET')
-    const producto = await productosDao.getByRandom(id);
+    const producto = await productosDao.getByCodigo(id);
     if (producto) {
         res.render("home", {
             producto,
@@ -370,20 +369,30 @@ routerProductos.post("/", auth, async (req, res) => {
         });
     }
 });
-
-
-
-// para el carrito pense hacer algo como con socket io para comunicar front end con back
-routerCarritos.get('/' , (req,res) => {
-    console.log('carrito')
+routerCarritos.get('/', auth, async (req,res) => {
+    const carrito = req.session.carrito
+    console.log(carrito);
+    res.render("carrito", {
+        carrito,
+        productos : carrito.productos,
+        carritoExist: carrito.productos.length >= 1 ? true : false,
+        user : req.session.user
+    });
 })
 routerCarritos.get('/compra' , (req,res) => {
+    const carrito = req.session.carrito
+    const productos = carrito.productos
+    let lista = ``
+    productos.forEach( producto => {
+        lista += producto.nombre+'\n'
+    })
     //nuevo pedido de
+    
     const mailOptions = {
-        from: configEnv.MAIL_ADMIN, // admin
+        from: configEnv.MAIL_ADMIN, 
         to: configEnv.MAIL_ADMIN,
         subject: 'Nuevo pedido de '+req.session.user.mail,
-        html: `<h1 style="color: blue;">El usuario compro LISTA DE PRODUCTOS AGREGADO AL CARRITO`
+        html: `<h1 style="color: blue;">El usuario compro `+ lista
     }
     transporter.sendMail(mailOptions)
     .then((res) => console.log(res))
@@ -391,8 +400,8 @@ routerCarritos.get('/compra' , (req,res) => {
 
     client.messages.create({
         from: 'whatsapp:+14155238886',
-        body: 'Nuevo pedido de '+req.session.user.mail+' El usuario compro LISTA DE PRODUCTOS AGREGADO AL CARRITO',
-        to: 'whatsapp:'+ configEnv.WPP_ADMIN// admin
+        body: 'Nuevo pedido de '+req.session.user.mail+' El usuario compro '+ lista,
+        to: 'whatsapp:'+ configEnv.WPP_ADMIN
     })
     .then(message => console.log(message.sid))
     .catch((error) => console.log(error));
@@ -405,4 +414,22 @@ routerCarritos.get('/compra' , (req,res) => {
     .then((message) =>  console.log(message))
     .catch((error) =>  console.log(error))
 })
+
+
+routerCarritos.get('/:codigo', auth, async (req,res) => {
+    const codigo = req.params.codigo
+    const carrito = req.session.carrito
+    const productoAgregado = await productosDao.getByCodigo(codigo);
+    if (productoAgregado) carrito.productos.push(productoAgregado)
+    const carritoAgregado = await carritosDao.save(carrito)
+    console.log(carritoAgregado);
+    const productos = await productosDao.getAll();
+    res.render("home", {
+        productos,
+        productsExist: productos ? true : false,
+        user : req.session.user,
+        admin : req.session.admin
+    });
+})
+
 

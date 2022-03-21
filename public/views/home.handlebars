@@ -1,3 +1,4 @@
+
 <div class="container mt-5">
     {{#if user}}
         <div class="alert alert-primary" role="alert">
@@ -21,8 +22,9 @@
                             <p class="card-text" > Precio : {{this.precio}}</p>
                             <p class="card-text" >Stock : {{this.stock}}</p>
                         </div>
-                        <a href="/api/carritos/" class="btn btn-info"> <p>Agregar Al carrito </p> </a>
-                        
+                        <a href="/api/carritos/{{this.codigo}}" class="btn btn-info"> 
+                            <p>Agregar Al carrito </p>
+                        </a>
                     </div>
                 {{/each}}
             </div>

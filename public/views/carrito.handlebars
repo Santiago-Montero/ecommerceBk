@@ -1,0 +1,16 @@
+<div class="container mt-5">
+    {{#if carritoExist}}
+        {{#each productos}}
+            <div class="card">
+                <img src="{{this.foto}}" alt="{{this.nombre}}" class="card-img-top productoImg"  name="foto" >
+                <div class="card-body">
+                    <h5 class="card-title">{{this.nombre}}</h5>
+                    <p class="card-text" >{{this.descripcion}}</p>
+                </div>
+            </div>
+        {{/each}}
+        <a href="/api/carritos/compra"> Comprar </a>
+    {{else}}
+        <h1> No hay nada en el carrito</h1>
+    {{/if}}
+</div>
