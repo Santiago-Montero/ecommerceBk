@@ -381,9 +381,9 @@ routerCarritos.get('/', auth, async (req,res) => {
 })
 routerCarritos.get('/compra' , (req,res) => {
     const carrito = req.session.carrito
-    const productos = carrito.productos
+    const productosCarrito = carrito.productos
     let lista = ``
-    productos.forEach( producto => {
+    productosCarrito.forEach( producto => {
         lista += producto.nombre+'\n'
     })
     //nuevo pedido de
@@ -413,6 +413,13 @@ routerCarritos.get('/compra' , (req,res) => {
     })
     .then((message) =>  console.log(message))
     .catch((error) =>  console.log(error))
+    const productos = await productosDao.getAll();
+    res.render("home", {
+        productos,
+        productsExist: productos ? true : false,
+        user : req.session.user,
+        admin : req.session.admin
+    });
 })
 
 
