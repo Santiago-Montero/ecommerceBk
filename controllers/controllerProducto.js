@@ -1,12 +1,16 @@
-const { productosDao } = require("../contenedores/daos/index.js");
-const { usuariosDao } = require("../contenedores/daos/index.js");
-const { carritosDao } = require("../contenedores/daos/index.js");
 const { transporter } = require('../comunicacion/mail')
-const { client } = require('../comunicacion/mensaje')
 const { logger } = require('./logs')
+const {
+    saveUser,
+    getProduct,
+    getProducts,
+    getRandomNumber,
+    getUser,
+    postProduct } = require('../services/services')
+
 
 const {info, memoria, argsDeEntrada, PORT, MODE } = require('../process.js')
-/* Inicio */ 
+/* Inicio */
 
 async function getInfo(req, res) {
     logger.info('Esta en la ruta /info por el metodo GET')
@@ -34,7 +38,7 @@ async function getRegister(req, res) {
 async function postRegister(req, res) {
     logger.info('Esta en la ruta /register por el metodo POST ')
     const newUsuario = req.body 
-    const usuario = await usuariosDao.save(newUsuario);
+    const usuario = await saveUser(newUsuario) ;
 
     const mailOptions = {
         from: configEnv.MAIL_ADMIN,
@@ -50,77 +54,6 @@ async function postRegister(req, res) {
     res.render("logIn");
 }
 
-/* CARRITO */
-
-async function getCompra(req, res) {
-    const codigo = req.params.codigo
-    const carrito = req.session.carrito
-    const productoAgregado = await productosDao.getByCodigo(codigo);
-    if (productoAgregado) carrito.productos.push(productoAgregado)
-    const carritoAgregado = await carritosDao.save(carrito)
-    console.log(carritoAgregado);
-    const productos = await productosDao.getAll();
-    res.render("home", {
-        productos,
-        productsExist: productos ? true : false,
-        user : req.session.user,
-        admin : req.session.admin
-    });
-}
-async function getCompraCarrito(req, res) {
-    const carrito = req.session.carrito
-    const productosCarrito = carrito.productos
-    let lista = ``
-    productosCarrito.forEach( producto => {
-        lista += producto.nombre+'\n'
-    })
-    //nuevo pedido de
-    
-    const mailOptions = {
-        from: configEnv.MAIL_ADMIN, 
-        to: configEnv.MAIL_ADMIN,
-        subject: 'Nuevo pedido de '+req.session.user.mail,
-        html: `<h1 style="color: blue;">El usuario compro `+ lista
-    }
-    transporter.sendMail(mailOptions)
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err))
-
-    client.messages.create({
-        from: 'whatsapp:+14155238886',
-        body: 'Nuevo pedido de '+req.session.user.mail+' El usuario compro '+ lista,
-        to: 'whatsapp:'+ configEnv.WPP_ADMIN
-    })
-    .then(message => console.log(message.sid))
-    .catch((error) => console.log(error));
-
-    client.messages.create({
-        body: 'Su pedido fue recibido y esta en proceso...',
-        from: '+18285648984',
-        to: req.session.user.telefono
-    })
-    .then((message) =>  console.log(message))
-    .catch((error) =>  console.log(error))
-    const productos = await productosDao.getAll();
-    res.render("home", {
-        productos,
-        productsExist: productos ? true : false,
-        user : req.session.user,
-        admin : req.session.admin
-    });
-}
-async function getCarrito(req, res) {
-    const carrito = req.session.carrito
-    console.log(carrito);
-    res.render("carrito", {
-        carrito,
-        productos : carrito.productos,
-        carritoExist: carrito.productos.length >= 1 ? true : false,
-        user : req.session.user
-    });
-}
-
-
 /* PRODUCTOS */
 async function postCargarProducto(req, res) {
     logger.info('Esta en la ruta /api/productos/ por el metodo POST')
@@ -132,10 +65,10 @@ async function postCargarProducto(req, res) {
         precio,
         foto,
         timestamp: moment().format("l"),
-        codigo: Number(productosDao.getRandom())
+        codigo: getRandomNumber()
     };
-    if (await productosDao.save(productoNuevo)) {
-        const productos = await productosDao.getAll();
+    if (await postProduct(productoNuevo)) {
+        const productos = await getProducts()
         res.render("home", {
             productos,
             productsExist: productos ? true : false,
@@ -154,7 +87,7 @@ async function postCargarProducto(req, res) {
 }
 async function getAdmin(req, res) {
     logger.info('Esta en la ruta /api/productos/admin por el metodo GET')
-    const productos = await productosDao.getAll();
+    const productos = await getProducts();
     if (req.session.admin) {
         res.render("home", {
             productos,
@@ -176,8 +109,7 @@ async function getAdmin(req, res) {
 async function getProducto(req, res) {
     const id = req.params.id;
     logger.info('Esta en la ruta /api/productos/'+ id+' por el metodo GET')
-    console.log(id);
-    const productoViejo = await productosDao.getByCodigo(id);
+    const productoViejo = await getProduct(id)
     if(productoViejo){
         console.log(productoViejo)
         res.render("actualizar", {
@@ -196,10 +128,11 @@ async function getProducto(req, res) {
         // res.status(404).json(mensaje);
     }
 }
+
 async function getProductos(req, res) {
     logger.info('Esta en la ruta /api/productos/ por el metodo GET')
     // carga de productos
-    const productos = await productosDao.getAll();
+    const productos = await getProducts();
     res.render("home", {
         productos,
         productsExist: productos ? true : false,
@@ -213,7 +146,7 @@ async function postUser(req, res) {
 
     const user_mail = req.body.mail;
     const user_password = req.body.password;
-    const usuario_db = await usuariosDao.getByMail(user_mail);
+    const usuario_db = await getUser(user_mail);
     if(usuario_db){
         if(usuario_db[0].password == user_password){
             if(!req.session.user) req.session.user = usuario_db[0]
@@ -223,7 +156,7 @@ async function postUser(req, res) {
                 productos : []
             }
             if(!req.session.carrito) req.session.carrito = carrito
-            const productos = await productosDao.getAll();
+            const productos = await getProducts() ;
             res.render("home", {
                 productos,
                 productsExist: productos ? true : false,
@@ -298,8 +231,5 @@ module.exports  = {
     getProducto,
     getAdmin,
     postCargarProducto,
-    getCarrito,
-    getCompraCarrito,
-    getCompra,
     auth 
 }

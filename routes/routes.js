@@ -4,7 +4,7 @@ const path  = require('path');
 const session = require("express-session");
 const handlebars = require("express-handlebars");
 const compression = require("compression");
-const { db } = require('../contenedores/daos/session.js')
+const { db } = require('../models/daos/session.js')
 const {
     getLogIn,
     getRegister,
@@ -17,10 +17,13 @@ const {
     getProductos,
     getAdmin,
     postCargarProducto,
+    auth 
+} = require('../controllers/controllerProducto')
+const {
     getCarrito,
     getCompraCarrito,
     getCompra,
-    auth } = require('./controller')
+} = require('../controllers/controllerCarrito')
 
 
 
@@ -72,7 +75,7 @@ routerProductos.get('/admin', auth, getAdmin)
 routerCarritos.get('/', auth, getCarrito)
 routerCarritos.get('/compra', auth, getCompraCarrito)
 routerCarritos.get('/:codigo', auth, getCompra)
-routerProductos.post('/user', auth, postUser)
+routerProductos.post('/user', postUser)
 routerProductos.post('/user', auth, postCargarProducto)
 
 
