@@ -17,6 +17,8 @@ const {
     getProductos,
     getAdmin,
     postCargarProducto,
+    getProductosTest,
+    postProductoTest,
     auth 
 } = require('../controllers/controllerProducto')
 const {
@@ -70,6 +72,7 @@ app.get('/register', getRegister)
 app.post('/register', postRegister)
 routerProductos.get('/logout', auth, getlogout)
 routerProductos.get('/', auth, getProductos)
+routerProductos.get('/productos',getProductosTest)
 routerProductos.get('/:id', auth, getProducto)
 routerProductos.get('/admin', auth, getAdmin)
 routerCarritos.get('/', auth, getCarrito)
@@ -77,6 +80,7 @@ routerCarritos.get('/compra', auth, getCompraCarrito)
 routerCarritos.get('/:codigo', auth, getCompra)
 routerProductos.post('/user', postUser)
 routerProductos.post('/user', auth, postCargarProducto)
+routerProductos.post('/productos',postProductoTest)
 
 
 module.exports = {

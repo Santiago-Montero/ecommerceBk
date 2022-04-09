@@ -142,7 +142,32 @@ async function getProductos(req, res) {
         admin : req.session.admin
     });
 }
-
+async function getProductosTest(req, res) {
+    logger.info('Esta en la ruta /api/productos/ por el metodo GET')
+    // carga de productos
+    const productos = await getProducts();
+    console.log(productos)
+    res.json(productos)
+    return productos ; 
+}
+async function postProductoTest(req, res) {
+    const { nombre, descripcion, stock, precio, foto } = req.body;
+    const productoNuevo = {
+        nombre,
+        descripcion,
+        stock,
+        precio,
+        foto,
+        timestamp: '2022-03-19T03:00:00.000',
+        codigo: 545984
+    };
+    console.log(productoNuevo)
+    if (await postProduct(productoNuevo)) {
+        res.sendStatus(200)
+    } else {
+        res.sendStatus(400)
+    }
+}
 async function postUser(req, res) {
     logger.info('Esta en la ruta /api/productos/user por el metodo POST')
 
@@ -233,5 +258,7 @@ module.exports  = {
     getProducto,
     getAdmin,
     postCargarProducto,
+    getProductosTest,
+    postProductoTest,
     auth 
 }
