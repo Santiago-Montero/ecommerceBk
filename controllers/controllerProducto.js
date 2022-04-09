@@ -6,6 +6,7 @@ const {
     getProducts,
     getRandomNumber,
     getUser,
+    getCotizacion,
     postProduct } = require('../services/services')
 
 
@@ -13,6 +14,7 @@ const {info, memoria, argsDeEntrada, PORT, MODE } = require('../process.js')
 /* Inicio */
 
 async function getInfo(req, res) {
+    console.log(await getCotizacion());
     logger.info('Esta en la ruta /info por el metodo GET')
     res.render("info", {
         info_exist: info ? true : false,

@@ -10,6 +10,9 @@ async function saveUser(user){
 async function getProduct(id){
     return await productosDao.getByCodigo(id);
 }
+async function getCotizacion(id){
+    return await productosDao.buscarConCotizacionEnDolares(id);
+}
 async function getProducts(){
     return await productosDao.getAll();
 }
@@ -34,5 +37,6 @@ module.exports  = {
     getRandomNumber,
     getUser,
     postProduct,
-    postCart
+    postCart,
+    getCotizacion,
 }
