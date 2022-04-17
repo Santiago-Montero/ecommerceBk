@@ -14,6 +14,7 @@ async function getCotizacion(id){
     return await productosDao.buscarConCotizacionEnDolares(id);
 }
 async function getProducts(){
+    
     return await productosDao.getAll();
 }
 function getRandomNumber(){

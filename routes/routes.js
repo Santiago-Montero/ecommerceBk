@@ -70,9 +70,10 @@ app.get('/api/random', getRandom)
 app.get('/register', getRegister)
 
 app.post('/register', postRegister)
+app.get('/test/productos',getProductosTest)
+app.post('/test/productos',postProductoTest)
 routerProductos.get('/logout', auth, getlogout)
 routerProductos.get('/', auth, getProductos)
-routerProductos.get('/productos',getProductosTest)
 routerProductos.get('/:id', auth, getProducto)
 routerProductos.get('/admin', auth, getAdmin)
 routerCarritos.get('/', auth, getCarrito)
@@ -80,7 +81,6 @@ routerCarritos.get('/compra', auth, getCompraCarrito)
 routerCarritos.get('/:codigo', auth, getCompra)
 routerProductos.post('/user', postUser)
 routerProductos.post('/user', auth, postCargarProducto)
-routerProductos.post('/productos',postProductoTest)
 
 
 module.exports = {
