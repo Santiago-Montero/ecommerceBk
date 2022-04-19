@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha test/apirestful.test.js",
+    "test": "mocha test/apirestful.test.js --timeout 10000",
     "start": "node server.js"
   },
   "keywords": [],
