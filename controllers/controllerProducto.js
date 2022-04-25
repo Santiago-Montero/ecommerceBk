@@ -130,6 +130,11 @@ async function getProducto(req, res) {
         // res.status(404).json(mensaje);
     }
 }
+async function getProductoKoa(req, res) {
+    const id = req.params.id;
+    const producto = await getProduct(id)
+    return producto
+}
 
 async function getProductos(req, res) {
     logger.info('Esta en la ruta /api/productos/ por el metodo GET')
@@ -142,6 +147,13 @@ async function getProductos(req, res) {
         admin : req.session.admin
     });
 }
+
+async function getProductosKoa(req, res) {
+    // carga de productos
+    const productos = await getProducts();
+    return productos
+}
+
 async function getProductosTest(req, res) {
     logger.info('Esta en la ruta /api/productos/ por el metodo GET')
     // carga de productos
@@ -260,5 +272,7 @@ module.exports  = {
     postCargarProducto,
     getProductosTest,
     postProductoTest,
+    getProductoKoa,
+    getProductosKoa,
     auth 
 }

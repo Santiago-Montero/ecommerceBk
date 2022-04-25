@@ -1,4 +1,7 @@
 const { app } = require('./routes/routes.js')
+const koaApp = require('./framework/koa.app.js')
 
-app.listen( process.env.PORT || 8080);
+
+koaApp.listen(3000)
+//app.listen( process.env.PORT || 8080);
 
